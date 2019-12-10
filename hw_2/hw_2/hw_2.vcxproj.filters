@@ -18,12 +18,12 @@
     <ClCompile Include="Bank.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ATMS.c">
+    <ClCompile Include="ATM.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ATMS.h">
+    <ClInclude Include="ATM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
