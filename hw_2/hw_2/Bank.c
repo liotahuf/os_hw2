@@ -1,9 +1,7 @@
 #include "ATM.h"
 
 static int Bank_balance = 0;
-pthread_mutex_t Bank_lock;
-pthread_mutex_t Accounts_lock;
-pthread_mutex_t Log_lock;
+
 
 
 
@@ -20,6 +18,29 @@ int main(int argc, char* argv[])
 	{
 		perror("illegal arguments\n");
 		exit(-1);
+	}
+	//initialize acc list lock
+	if (pthread_mutex_init(&accList_lock, NULL) !=0)
+	{
+		perror("unable to initialize mutex\n");
+		exit(-1);
+	}
+	//initialize acc list to null
+	head = NULL;
+
+
+	pthread_t* ATMs_threads = (pthread_t)malloc(ATM_num * sizeof(pthread_t));
+	if (ATMs_threads == NULL)
+	{
+		perror("dynamic allocation failed\n");
+		exit(-1);
+	}
+
+	//create ATM threads
+	for (int i = 0; i <= ATM_num; i++)
+	{
+		rc = pthread_create(&)
+
 	}
 
 

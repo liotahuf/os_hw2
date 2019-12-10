@@ -11,23 +11,25 @@
 #include <pthread.h>
 
 #define PASSWORD_LENGTH 4
-
-
+#define MAX_ARG 4
+#define MAX_LINE_SIZE 50
+//-----globals-----
+int num_of_threads;
 typedef struct account_ {
 	int account_num;
 	char password[PASSWORD_LENGTH+1];
 	int balance;
 	pthread_mutex_t balance_read_lock;
 	pthread_mutex_t balance_write_lock;
-}accounut;
+}account;
 
 typedef struct accounts_list
 {
-	accounut curr_account;
+	account curr_account;
 	struct accounts_list* next_account;
 	
 
-} *pAccList;
+} Acclist,*pAccList;
 
 pthread_mutex_t accList_lock;
 pAccList head;
@@ -35,6 +37,6 @@ pAccList head;
 typedef struct ATM_ {
 	int ATM_ID;
 	char* file;
-} ATM, * pATM;
+} ATM, *pATM;
 
 #endif
