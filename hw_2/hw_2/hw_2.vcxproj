@@ -18,6 +18,13 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ATM.cpp" />
+    <ClCompile Include="Bank.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ATM.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{E0288D6C-1600-4D1E-BE88-5BD3E0C2032D}</ProjectGuid>
@@ -122,13 +129,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="ATM.c" />
-    <ClCompile Include="Bank.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="ATM.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
