@@ -20,34 +20,42 @@ using std::endl;
 using std::cerr;
 using std::ifstream;
 using std::stringstream;
+using std::deque;
+ofstream outfile;
 
 #define PASSWORD_LENGTH 4
 #define MAX_ARG 4
 #define MAX_LINE_SIZE 50
 //-----globals-----
 int num_of_threads;
-typedef struct account_ {
-	int account_num;
-	char password[PASSWORD_LENGTH + 1];
+
+typedef struct Account_ {
+
+	string account_num;
+	string password;
 	int balance;
+	//lock to deal wih paralelism
 	pthread_mutex_t balance_read_lock;
 	pthread_mutex_t balance_write_lock;
-}account;
+	int readers_cnt;
 
-typedef struct accounts_list
-{
-	account curr_account;
-	struct accounts_list* next_account;
+	
+} Account;
+
+vector <Account> account_list;
+pthread_mutex_t list_mutex_read;
+pthread_mutex_t list_mutex_write;
+int list_read_count = 0;
 
 
-} Acclist, * pAccList;
-
-pthread_mutex_t accList_lock;
-pAccList head;
-
-typedef struct ATM_ {
+typedef struct ATM_data_ {
 	int ATM_ID;
 	char* file;
-} ATM, * pATM;
+} ATM_data, * pATM_data;
+
+
+//functions
+void* ATMain(void* ptrATM);
+
 
 #endif
