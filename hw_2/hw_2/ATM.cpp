@@ -7,10 +7,11 @@
 // Parameters: pointer to ATM struct(ID and ATM file)
 // Returns: nothing(void)
 //**************************************************************************************
-void* ATMain(void* ptrATM)
+void* ATMain(void* ptrATM_data)
 {
 	char line[MAX_LINE_SIZE];
-	pATM curr_ATM = (pATM)ptrATM;
+	pATM_data curr_ATM = (pATM_data)ptrATM_data;
+
 
 	char* args[MAX_ARG];
 	int i = 0, num_arg = 0;
@@ -36,6 +37,10 @@ void* ATMain(void* ptrATM)
 		if (!strcmp(cmd, "O"))
 		{
 			//open account
+			int account_num = atoi(args[1]);
+			int initial_amount = atoi(args[3]);
+			OpenAccount(account_num, args[2] , initial_amount, curr_ATM->ATM_ID);
+			break;
 		}
 		else if (!strcmp(cmd, "D"))
 		{
@@ -68,28 +73,74 @@ void* ATMain(void* ptrATM)
 // function name: AccCreate
 // Description: Creates account with account number and pwaasor
 // Parameters: account number and pwaasor
-// Returns: int -1 sucssess 0 failure
+// Returns: int 0 sucssess -1 failure
 //**************************************************************************************
-int AccCreate(int account_num, char password[PASSWORD_LENGTH + 1])
+int OpenAccount(int account_num, char password[PASSWORD_LENGTH + 1], int initial_amout, int ATM_ID)
 {
 	//first,lock the list of accounts,so no one else can change it while we are trying to create account
-	if (!pthread_mutex_lock(&accList_lock) != 0)
+	if (!pthread_mutex_lock(&acc_list_mutex_write) != 0)
 	{
-		perror("unable to lock mutex\n");
-		//exit(-1); TBD maybe this need to be thread exit
+		cerr << "unable to lock mutex" << endl;
+		exit(-1);
+		
 	}
-	if (head == NULL)//acc list is empty
+	//first, verify if there alredy is an account with the same num
+	if (SearchAccount(account_num) == -1) //no account with this account number
 	{
-		head = (pAccList)malloc(sizeof(Acclist));
-		if (head == NULL)
-		{
+		Account* new_account = new Account;
+		new_account->account_num = account_num;
+		new_account->balance = initial_amout;
+		new_account->password = password;
+		new_account->readers_cnt = 0;
 
-			perror("dynamic allocation failed\n");
-			//exit(-1); TBD maybe this need to be thread exit
+		// initializing 2 mutexes for readers writers on account
+		if (pthread_mutex_init(&new_account->balance_read_lock, NULL) != 0) {
+			cerr << "error: mutex initialization error" << endl;
+			exit(-1);
 		}
 
+		if (pthread_mutex_init(&new_account->balance_write_lock, NULL) != 0) {
+			cerr << "error: mutex initialization error" << endl;
+			exit(-1);
+		}
 
+		account_list.push_back(*new_account);
+		sleep(1);
+		pthread_mutex_unlock(&acc_list_mutex_write);
+		pthread_mutex_lock(&log_write_lock);
+		outfile << ATM_ID << ": New account id is " << id<< " with password " << password<< " and initial balance " << initial_amout << endl;
+		pthread_mutex_unlock(&log_write_lock);
 
+		return 0;
 	}
+	else
+	{
+		pthread_mutex_unlock(&acc_list_mutex_write);
+		pthread_mutex_lock(&log_write_lock);
+		outfile <<"Error " << ATM_ID << "Your transaction failed – account with the same id exists"<< endl;
+		pthread_mutex_unlock(&log_write_lock);
+		return -1;
+	}
+	
 
+}
+
+
+//********************************************
+// function name: SearchAccount
+// Description:Serach for account with account_num 
+// Parameters: account number 
+// Returns: index of the found account in account vector if it exists,else -1
+//**************************************************************************************
+
+int SearchAccount(int account_num) {	//  verify if there alredy is an account with the same num
+	int found_accound = -1;
+	int i =0;
+	std::vector<Account>::iterator it;
+	for (it = account_list.begin(); it != account_list.end(); it++,i++)
+		if (it->account_num== id) {
+			found_accound = i;
+			break;
+		}
+	return found_accound;
 }
