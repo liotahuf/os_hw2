@@ -49,7 +49,7 @@ typedef struct Account_ {
 // accounts array and its locks
 vector <Account> account_list;
 pthread_mutex_t acc_list_mutex_read;
-pthread_mutex_t acc_ist_mutex_write;
+pthread_mutex_t acc_list_mutex_write;
 int list_read_count = 0;
 
 
@@ -66,7 +66,7 @@ int log_read_count = 0;
 
 //functions
 void* ATMain(void* ptrATM);
-int OpenAccount(int account_num, char password[PASSWORD_LENGTH + 1], int initial_amout, int ATM_ID);
+int OpenAccount(int account_num, string password, int initial_amout, int ATM_ID);
 int SearchAccount(int account_num);
 
 #endif

@@ -70,20 +70,16 @@ void* ATMain(void* ptrATM_data)
 }
 
 //********************************************
-// function name: AccCreate
+// function name: OpenAccount
 // Description: Creates account with account number and pwaasor
 // Parameters: account number and pwaasor
 // Returns: int 0 sucssess -1 failure
 //**************************************************************************************
-int OpenAccount(int account_num, char password[PASSWORD_LENGTH + 1], int initial_amout, int ATM_ID)
+int OpenAccount(int account_num, string password, int initial_amout, int ATM_ID)
 {
 	//first,lock the list of accounts,so no one else can change it while we are trying to create account
-	if (!pthread_mutex_lock(&acc_list_mutex_write) != 0)
-	{
-		cerr << "unable to lock mutex" << endl;
-		exit(-1);
-		
-	}
+	pthread_mutex_lock(&acc_list_mutex_write);
+
 	//first, verify if there alredy is an account with the same num
 	if (SearchAccount(account_num) == -1) //no account with this account number
 	{
@@ -94,18 +90,17 @@ int OpenAccount(int account_num, char password[PASSWORD_LENGTH + 1], int initial
 		new_account->readers_cnt = 0;
 
 		// initializing 2 mutexes for readers writers on account
-		if (pthread_mutex_init(&new_account->balance_read_lock, NULL) != 0) {
-			cerr << "error: mutex initialization error" << endl;
-			exit(-1);
-		}
+		pthread_mutex_init(&new_account->balance_read_lock, NULL);
+		
 
-		if (pthread_mutex_init(&new_account->balance_write_lock, NULL) != 0) {
-			cerr << "error: mutex initialization error" << endl;
-			exit(-1);
-		}
-
+		pthread_mutex_init(&new_account->balance_write_lock, NULL);
+		
+		//add new account to account array
 		account_list.push_back(*new_account);
-		sleep(1);
+		sleep(1); 
+
+		//after one second, terminate action,write to log and release locks
+		
 		pthread_mutex_unlock(&acc_list_mutex_write);
 		pthread_mutex_lock(&log_write_lock);
 		outfile << ATM_ID << ": New account id is " << id<< " with password " << password<< " and initial balance " << initial_amout << endl;
@@ -117,7 +112,7 @@ int OpenAccount(int account_num, char password[PASSWORD_LENGTH + 1], int initial
 	{
 		pthread_mutex_unlock(&acc_list_mutex_write);
 		pthread_mutex_lock(&log_write_lock);
-		outfile <<"Error " << ATM_ID << "Your transaction failed – account with the same id exists"<< endl;
+		outfile <<"Error " << ATM_ID << ": Your transaction failed – account with the same id exists"<< endl;
 		pthread_mutex_unlock(&log_write_lock);
 		return -1;
 	}
@@ -125,6 +120,42 @@ int OpenAccount(int account_num, char password[PASSWORD_LENGTH + 1], int initial
 
 }
 
+
+//********************************************
+// function name: AccCreate
+// Description: Creates account with account number and pwaasor
+// Parameters: account number and pwaasor
+// Returns: int 0 sucssess -1 failure
+//**************************************************************************************
+int Deposit(int account_num, string password, int initial_amout, int ATM_ID)
+{
+	//make readers/writers structure
+	pthread_mutex_lock(&acc_list_mutex_read);
+	list_read_count++;
+	//now accounts list reader_lock locked
+	if (list_read_count == 1) //if the first reader
+	{
+		//lock write_lock
+		pthread_mutex_lock(&acc_list_mutex_write);
+	}
+	pthread_mutex_unlock(&acc_list_mutex_read);
+
+	int i = SearchAccount(account_num);
+	if (i == -1)//no account with this account num
+	{
+		outfile << "Error " << ATM_ID << ": Your transaction failed – account id "<< account_num<< " does not exist" << endl;
+		return -1;
+	}
+	if (account_list[i].password == password)
+	{
+
+	}
+}
+
+
+
+
+// auxiliary functions
 
 //********************************************
 // function name: SearchAccount
