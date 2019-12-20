@@ -67,6 +67,10 @@ int log_read_count = 0;
 //functions
 void* ATMain(void* ptrATM);
 int OpenAccount(int account_num, string password, int initial_amout, int ATM_ID);
+int Deposit(int account_num, string password, int amount, int ATM_ID);
+int Withdraw(int account_num, string password, int amount, int ATM_ID);
+int BalanceCheck(int account_num, string password, int ATM_ID);
+int Transfer(int account_num_src, string password, int account_num_dst, int amount, int ATM_ID);
 int SearchAccount(int account_num);
 
 #endif
