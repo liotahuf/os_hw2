@@ -1,5 +1,14 @@
 #include "ATM.h"
 
+ofstream outfile;
+int num_of_threads;
+vector <Account> account_list;
+pthread_mutex_t acc_list_mutex_read;
+pthread_mutex_t acc_list_mutex_write;
+int list_read_count = 0;
+pthread_mutex_t log_mutex_read;
+pthread_mutex_t log_mutex_write;
+int log_read_count = 0;
 
 //********************************************
 // function name: ATMain

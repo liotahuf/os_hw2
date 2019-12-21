@@ -21,7 +21,7 @@ using std::cerr;
 using std::ifstream;
 using std::stringstream;
 
-ofstream outfile;
+extern ofstream outfile;
 
 #define PASSWORD_LENGTH 4
 #define MAX_ARG 4
@@ -31,7 +31,7 @@ so this number should be bigger than max line width*/
 
 
 //-----globals-----
-int num_of_threads;
+extern int num_of_threads;
 
 typedef struct Account_ {
 
@@ -47,10 +47,10 @@ typedef struct Account_ {
 } Account;
 
 // accounts array and its locks
-vector <Account> account_list;
-pthread_mutex_t acc_list_mutex_read;
-pthread_mutex_t acc_list_mutex_write;
-int list_read_count = 0;
+extern vector <Account> account_list;
+extern pthread_mutex_t acc_list_mutex_read;
+extern pthread_mutex_t acc_list_mutex_write;
+extern int  list_read_count;
 
 
 typedef struct ATM_data_ {
@@ -60,9 +60,9 @@ typedef struct ATM_data_ {
 
 //log file locks
 
-pthread_mutex_t log_mutex_read;
-pthread_mutex_t log_mutex_write;
-int log_read_count = 0;
+extern pthread_mutex_t log_mutex_read;
+extern pthread_mutex_t log_mutex_write;
+extern int log_read_count ;
 
 //functions
 void* ATMain(void* ptrATM);

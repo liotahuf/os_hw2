@@ -74,15 +74,15 @@ int main(int argc, char* argv[])
 
 	//update ATM data array for threads
 
-	for (int i = 2; i <= ATM_num; i++)
+	for (int i = 0; i < ATM_num; i++)
 	{
-		ATM_threads_data[i].ATM_ID = i-1;
-		ATM_threads_data[i].file= argv[i];
+		ATM_threads_data[i].ATM_ID = i;
+		ATM_threads_data[i].file= argv[i+2];
 
 	}
 
 	//create ATM threads
-	for (int i = 0; i <= ATM_num; i++)
+	for (int i = 0; i < ATM_num; i++)
 	{
 		int rc;
 		if ((rc = pthread_create(&ATMs_threads[i], NULL, ATMain, &ATM_threads_data[i])))

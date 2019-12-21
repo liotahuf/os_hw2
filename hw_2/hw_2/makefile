@@ -9,18 +9,20 @@ CXXFLAGS = -std=c++0x -Wall
 SRC_GIVEN = Bank.cpp
 EXTRA_DEPS = ATM.h
 
-OBJ_GIVEN = $(patsubst %.cpp,%.o,$(SRC_GIVEN))
-OBJ_BP = ATM.o
-OBJ = $(OBJ_GIVEN) $(OBJ_BP)
+OBJS = Bank.o ATM.o
 
-#$(info OBJ=$(OBJ))
 
-Bank: $(OBJ)
-	$(CXX) -o $@ $(OBJ) -lpthread
 
-ATM.o: ATM.cpp ATM.h
+
+# Creating the  executable
+Bank: $(OBJS)
+	$(CXX) -o Bank $(OBJS) -lpthread 
+# Creating the object files
+Bank.o: Bank.cpp ATM.h
+ATMS.o: ATM.cpp ATM.h
+
 
 
 .PHONY: clean
 clean:
-	rm -f Bank $(OBJ)
+	rm -f Bank $(OBJS)
