@@ -21,7 +21,7 @@ void* ATMain(void* ptrATM_data)
 
 	pATM_data curr_ATM = (pATM_data)ptrATM_data;
 
-	int i = 0, num_arg = 0;
+	//int i = 0, num_arg = 0;
 	ifstream file(curr_ATM->file); //input file stream
 	string line;
 	if (!file || !file.good()) {
@@ -130,7 +130,8 @@ void* ATMain(void* ptrATM_data)
 		}
 	}
 	//kill thread
-	pthread_exit(NULL);
+	file.close();
+	return 0;
 
 }
 

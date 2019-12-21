@@ -1,8 +1,77 @@
-0: New account id is 12347 with password 0144 and initial balance 50
-0: Account 12347 new balance is 1250 after 1200 $ was deposited
-Bank: commissions of 3.37174 % were charged, the bank gained 42 $ from account 12347
-Error 0: Your transaction failed - password for account12347 is incorrect
-Bank: commissions of 2.09662 % were charged, the bank gained 25 $ from account 12347
-0: Account 12347 new balance is 683 after 500 $ was withdrew
-Bank: commissions of 2.98987 % were charged, the bank gained 20 $ from account 12347
-Bank: commissions of 2.32438 % were charged, the bank gained 15 $ from account 12347
+Error 0: Your transaction failed - account id 725 does not exist
+Error 1: Your transaction failed - account id 725 does not exist
+Error 2: Illegal command
+Error 0: Your transaction failed - account id 725 does not exist
+Error 1: Illegal command
+Error 2: Your transaction failed - account id 753 does not exist
+Error 0: Your transaction failed - account id 548 does not exist
+Error 1: Your transaction failed - account id 725 does not exist
+Error 2: Your transaction failed - account id 548 does not exist
+Error 0: Illegal command
+Error 1: Your transaction failed - account id 548 does not exist
+Error 2: Your transaction failed - account id 753 does not exist
+Error 0: Illegal command
+Error 1: Your transaction failed - account id 548 does not exist
+Error 2: Your transaction failed - account id 548 does not exist
+Error 0: Illegal command
+Error 1: Your transaction failed - account id 548 does not exist
+Error 2: Your transaction failed - account id 753 does not exist
+Error 0: Your transaction failed - account id 725 does not exist
+Error 1: Your transaction failed - account id 252 does not exist
+Error 2: Your transaction failed - account id 548 does not exist
+Error 0: Your transaction failed - account id 548 does not exist
+Error 1: Your transaction failed - account id 548 does not exist
+Error 2: Your transaction failed - account id 753 does not exist
+Error 1: Your transaction failed - account id 548 does not exist
+Error 1: Illegal command
+2: New account id is 753 with password 4374 and initial balance 3589
+0: New account id is 725 with password 2129 and initial balance 1355
+Error 1: Your transaction failed - account id 548 does not exist
+Error 2: Your transaction failed - password for account753 is incorrect
+Bank: commissions of 2.54082 % were charged, the bank gained 91 $ from account 753
+Bank: commissions of 2.54082 % were charged, the bank gained 34 $ from account 725
+Error 0: Illegal command
+Error 1: Your transaction failed - account id 548 does not exist
+Error 2: Your transaction failed - account with the same id exists
+Error 0: Illegal command
+Error 1: Your transaction failed - account id 548 does not exist
+Error 2: Illegal command
+Error 0: Illegal command
+Error 1: Illegal command
+Error 2: Your transaction failed - cannot transfer to same account
+0: Transfer 1997 from account 753 to account 725 new account balance is 1501 new target account balance is 3318
+Error 0: Your transaction failed - password for account725 is incorrect
+1: Account 753 new balance is 6774 after 5273 $ was deposited
+2: New account id is 548 with password 2405 and initial balance 5018
+Error 0: Your transaction failed - account with the same id exists
+Bank: commissions of 2.70804 % were charged, the bank gained 183 $ from account 753
+Bank: commissions of 2.70804 % were charged, the bank gained 89 $ from account 725
+Bank: commissions of 2.70804 % were charged, the bank gained 135 $ from account 548
+Error 1: Your transaction failed - account with the same id exists
+Error 2: Your transaction failed - account with the same id exists
+Error 1: Your transaction failed - account id 404 does not exist
+0: Account 753 new balance is 14410 after 7819 $ was deposited
+1: Account 753 new balance is 7033 after 7377 $ was withdrew
+Error 0: Your transaction failed - account id 548 balance is lower than 7339
+Error 2: Your transaction failed - account with the same id exists
+Error 2: Your transaction failed - account id 871 does not exist
+Error 2: Your transaction failed - password for account753 is incorrect
+Bank: commissions of 3.84428 % were charged, the bank gained 270 $ from account 753
+1: Account 725 new balance is 3675 after 446 $ was deposited
+2: Account 725 balance is 3675
+Bank: commissions of 3.84428 % were charged, the bank gained 141 $ from account 725
+Bank: commissions of 3.84428 % were charged, the bank gained 187 $ from account 548
+Error 0: Your transaction failed - account with the same id exists
+Error 1: Your transaction failed - account with the same id exists
+Error 2: Illegal command
+Error 1: Your transaction failed - account id 269 does not exist
+Error 0: Your transaction failed - account with the same id exists
+Error 2: Your transaction failed - account id 952 does not exist
+Error 1: Illegal command
+Error 0: Illegal command
+Error 1: Your transaction failed - account id 725 balance is lower than 4647
+Error 0: Your transaction failed - password for account725 is incorrect
+Error 0: Illegal command
+1: Account 548 balance is 4696
+Error 0: Your transaction failed - account id 548 balance is lower than 6237
+Error 0: Your transaction failed - account id 725 balance is lower than 4736

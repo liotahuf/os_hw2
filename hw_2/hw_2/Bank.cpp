@@ -121,38 +121,22 @@ int main(int argc, char* argv[])
 
 	for (int j = 0; j < ATM_num; j++)
 	{
-		void** retval;
-		pthread_join(ATMs_threads[j], retval);
-		if (retval != NULL)//some thread return becasue of a failure,so end the program
-		{
-			cerr << "error : fail in a thread " << endl;
-			exit(-1);
-		}
+
+		pthread_join(ATMs_threads[j], NULL);
 	}
 	//wait for ATM to end
 	ATM_end = 1;
 
 
-	void** retval2;
-	pthread_join(Comission_thread, retval2);
-	if (retval2 != NULL)//some thread return becasue of a failure,so end the program
-	{
-		cerr << "error : fail in a thread " << endl;
-		exit(-1);
-	}
-	
-	void** retval3;
-	pthread_join(Print_thread, retval3);
-	if (retval3 != NULL)//some thread return becasue of a failure,so end the program
-	{
-		cerr << "error : fail in a thread " << endl;
-		exit(-1);
-	}
+	//wait for commission thread and pritn thread
+	pthread_join(Comission_thread, NULL);
+	pthread_join(Print_thread, NULL);
+
 	
 
 	//close log file
 	outfile.close();
-	if (outfile.fail()) 
+	if (outfile.fail())
 	{
 		cerr << "error : failed to close log file" << endl;
 		return 1;
