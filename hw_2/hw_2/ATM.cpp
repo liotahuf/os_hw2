@@ -81,7 +81,7 @@ void* ATMain(void* ptrATM_data)
 		else
 		{
 			pthread_mutex_lock(&log_mutex_write);
-			outfile << "Error " << ATM_ID << ": Illegal command" << endl;
+			outfile << "Error " << curr_ATM->ATM_ID << ": Illegal command" << endl;
 			pthread_mutex_unlock(&log_mutex_write);
 		}
 	}
@@ -120,16 +120,16 @@ int OpenAccount(int account_num, string password, int initial_amout, int ATM_ID)
 		//add new account to account array
 		account_list.push_back(*new_account);
 		//lock account so no other atm can do anything to it until we write to log
-		pthread_mutex_lock(&account_list[account_idx].balance_write_lock, NULL);
+		pthread_mutex_lock(&account_list[account_idx].balance_write_lock);
 		sleep(1); 
 
 		//after one second, terminate action,write to log and release locks
 		
 		pthread_mutex_unlock(&acc_list_mutex_write);
 		pthread_mutex_lock(&log_mutex_write);
-		outfile << ATM_ID << ": New account id is " << id<< " with password " << password<< " and initial balance " << initial_amout << endl;
+		outfile << ATM_ID<< ": New account id is " << account_num<< " with password " << password<< " and initial balance " << initial_amout << endl;
 		pthread_mutex_unlock(&log_mutex_write);
-		pthread_mutex_unlock(&account_list[account_idx].balance_write_lock, NULL);
+		pthread_mutex_unlock(&account_list[account_idx].balance_write_lock);
 
 		return 0;
 	}
@@ -137,7 +137,7 @@ int OpenAccount(int account_num, string password, int initial_amout, int ATM_ID)
 	{
 		pthread_mutex_unlock(&acc_list_mutex_write);
 		pthread_mutex_lock(&log_mutex_write);
-		outfile <<"Error " << ATM_ID << ": Your transaction failed – account with the same id exists"<< endl;
+		outfile <<"Error " << ATM_ID << ": Your transaction failed - account with the same id exists"<< endl;
 		pthread_mutex_unlock(&log_mutex_write);
 		return -1;
 	}
@@ -170,7 +170,7 @@ int Deposit(int account_num, string password, int amount, int ATM_ID)
 	//lock account to write balanceso no other atm can perform action until this ended
 	if (account_idx != -1)
 	{
-		pthread_mutex_lock(&account_list[account_idx].balance_write_lock, NULL);
+		pthread_mutex_lock(&account_list[account_idx].balance_write_lock);
 	}
 		
 
@@ -178,7 +178,7 @@ int Deposit(int account_num, string password, int amount, int ATM_ID)
 	if (account_idx == -1)//no account with this account num
 	{
 		pthread_mutex_lock(&log_mutex_write);
-		outfile << "Error " << ATM_ID << ": Your transaction failed – account id "<< account_num<< " does not exist" << endl;
+		outfile << "Error " << ATM_ID << ": Your transaction failed - account id "<< account_num<< " does not exist" << endl;
 		pthread_mutex_unlock(&log_mutex_write);
 		return_status = -1;
 
@@ -186,7 +186,7 @@ int Deposit(int account_num, string password, int amount, int ATM_ID)
 	}else if (account_list[account_idx].password != password)
 	{
 		pthread_mutex_lock(&log_mutex_write);
-		outfile << "Error " << ATM_ID << ": Your transaction failed – password for account"<< account_list[account_idx].account_num <<" is incorrect" << endl;
+		outfile << "Error " << ATM_ID << ": Your transaction failed - password for account"<< account_list[account_idx].account_num <<" is incorrect" << endl;
 		pthread_mutex_unlock(&log_mutex_write);
 		return_status = -1;
 		
@@ -205,7 +205,7 @@ int Deposit(int account_num, string password, int amount, int ATM_ID)
 	//release account lock
 	if (account_idx != -1)
 	{
-		pthread_mutex_unlock(&account_list[account_idx].balance_write_lock, NULL);
+		pthread_mutex_unlock(&account_list[account_idx].balance_write_lock);
 	}
 	
 
@@ -247,28 +247,28 @@ int Withdraw(int account_num, string password, int amount, int ATM_ID)
 	//lock account to write balanceso no other atm can perform action until this ended
 	if (account_idx != -1)
 	{
-		pthread_mutex_lock(&account_list[account_idx].balance_write_lock, NULL);
+		pthread_mutex_lock(&account_list[account_idx].balance_write_lock);
 	}
 
 	
 	if (account_idx == -1)//no account with this account num
 	{
 		pthread_mutex_lock(&log_mutex_write);
-		outfile << "Error " << ATM_ID << ": Your transaction failed – account id " << account_num << " does not exist" << endl;
+		outfile << "Error " << ATM_ID << ": Your transaction failed - account id " << account_num << " does not exist" << endl;
 		pthread_mutex_unlock(&log_mutex_write);
 		return_status = -1;
 	}
 	else if (account_list[account_idx].password != password)
 	{
 		pthread_mutex_lock(&log_mutex_write);
-		outfile << "Error " << ATM_ID << ": Your transaction failed – password for account" << account_list[account_idx].account_num << " is incorrect" << endl;
+		outfile << "Error " << ATM_ID << ": Your transaction failed - password for account" << account_list[account_idx].account_num << " is incorrect" << endl;
 		pthread_mutex_unlock(&log_mutex_write);
 		return_status = -1;
 	}
 	else if(account_list[account_idx].balance < amount)
 	{
 		pthread_mutex_lock(&log_mutex_write);
-		outfile << "Error " << ATM_ID << ": Your transaction failed – account id " << account_list[account_idx].account_num << " balance is lower than " << amount<< << endl;
+		outfile << "Error " << ATM_ID << ": Your transaction failed - account id " << account_list[account_idx].account_num << " balance is lower than " << amount<<  endl;
 		pthread_mutex_unlock(&log_mutex_write);
 		return_status = -1;
 	}
@@ -284,7 +284,7 @@ int Withdraw(int account_num, string password, int amount, int ATM_ID)
 	//release account lock
 	if (account_idx != -1)
 	{
-		pthread_mutex_unlock(&account_list[account_idx].balance_write_lock, NULL);
+		pthread_mutex_unlock(&account_list[account_idx].balance_write_lock);
 	}
 
 	//reduce  numberof readers of accounts list
@@ -325,27 +325,27 @@ int BalanceCheck(int account_num, string password, int ATM_ID)
 	if (account_idx == -1)
 	{
 		pthread_mutex_lock(&log_mutex_write);
-		outfile << "Error " << ATM_ID << ": Your transaction failed – account id " << account_num << " does not exist" << endl;
+		outfile << "Error " << ATM_ID << ": Your transaction failed - account id " << account_num << " does not exist" << endl;
 		pthread_mutex_unlock(&log_mutex_write);
 		return_status = -1;
 	}
 	else if (account_list[account_idx].password != password)
 	{
 		pthread_mutex_lock(&log_mutex_write);
-		outfile << "Error " << ATM_ID << ": Your transaction failed – password for account" << account_list[account_idx].account_num << " is incorrect" << endl;
+		outfile << "Error " << ATM_ID << ": Your transaction failed - password for account" << account_list[account_idx].account_num << " is incorrect" << endl;
 		pthread_mutex_unlock(&log_mutex_write);
 		return_status = -1;
 	}
 	else 
 	{
 		//make readers/writers structure for account
-		pthread_mutex_lock(&account_list[account_idx].balance_read_lock, NULL);
+		pthread_mutex_lock(&account_list[account_idx].balance_read_lock);
 		account_list[account_idx].readers_cnt++;
 		if (account_list[account_idx].readers_cnt == 1)//first reader of account
 		{
-			pthread_mutex_lock(&account_list[account_idx].balance_write_lock, NULL);
+			pthread_mutex_lock(&account_list[account_idx].balance_write_lock);
 		}
-		pthread_mutex_unlock(&account_list[account_idx].balance_read_lock, NULL);
+		pthread_mutex_unlock(&account_list[account_idx].balance_read_lock);
 
 		//read balance
 		int balance = account_list[account_idx].balance;
@@ -355,13 +355,13 @@ int BalanceCheck(int account_num, string password, int ATM_ID)
 		pthread_mutex_unlock(&log_mutex_write);
 		return_status = 0;
 
-		pthread_mutex_lock(&account_list[account_idx].balance_read_lock, NULL);
+		pthread_mutex_lock(&account_list[account_idx].balance_read_lock);
 		account_list[account_idx].readers_cnt--;
 		if (account_list[account_idx].readers_cnt == 0)//first reader of account
 		{
-			pthread_mutex_unlock(&account_list[account_idx].balance_write_lock, NULL);
+			pthread_mutex_unlock(&account_list[account_idx].balance_write_lock);
 		}
-		pthread_mutex_unlock(&account_list[account_idx].balance_read_lock, NULL);
+		pthread_mutex_unlock(&account_list[account_idx].balance_read_lock);
 	}
 
 	//reduce  numberof readers of accounts list
@@ -402,21 +402,21 @@ int Transfer(int account_num_src, string password,int account_num_dst,int amount
 	if (account_src_idx ==-1)
 	{
 		pthread_mutex_lock(&log_mutex_write);
-		outfile << "Error " << ATM_ID << ": Your transaction failed – account id " << account_num << " does not exist" << endl;
+		outfile << "Error " << ATM_ID << ": Your transaction failed - account id " << account_num_src << " does not exist" << endl;
 		pthread_mutex_unlock(&log_mutex_write);
 		return_status = -1;
 	}
 	else if (account_dst_idx == -1)
 	{
 		pthread_mutex_lock(&log_mutex_write);
-		outfile << "Error " << ATM_ID << ": Your transaction failed – account id " << account_num << " does not exist" << endl;
+		outfile << "Error " << ATM_ID << ": Your transaction failed - account id " << account_num_dst << " does not exist" << endl;
 		pthread_mutex_unlock(&log_mutex_write);
 		return_status = -1;
 	}
 	else if (account_list[account_src_idx].password != password)
 	{
 		pthread_mutex_lock(&log_mutex_write);
-		outfile << "Error " << ATM_ID << ": Your transaction failed – password for account" << account_list[account_src_idx].account_num << " is incorrect" << endl;
+		outfile << "Error " << ATM_ID << ": Your transaction failed - password for account" << account_list[account_src_idx].account_num << " is incorrect" << endl;
 		pthread_mutex_unlock(&log_mutex_write);
 		return_status = -1;
 
@@ -424,7 +424,7 @@ int Transfer(int account_num_src, string password,int account_num_dst,int amount
 	else if (account_src_idx == account_dst_idx)
 	{
 		pthread_mutex_lock(&log_mutex_write);
-		outfile << "Error " << ATM_ID << ": Your transaction failed – cannot transfer to same account" << endl;
+		outfile << "Error " << ATM_ID << ": Your transaction failed - cannot transfer to same account" << endl;
 		pthread_mutex_unlock(&log_mutex_write);
 		return_status = -1;
 		
@@ -444,13 +444,13 @@ int Transfer(int account_num_src, string password,int account_num_dst,int amount
 			min_idx = account_dst_idx;
 			max_idx = account_src_idx;
 		}
-		pthread_mutex_lock(&account_list[min_idx].balance_write_lock, NULL);
-		pthread_mutex_lock(&account_list[max_idx].balance_write_lock, NULL);
+		pthread_mutex_lock(&account_list[min_idx].balance_write_lock);
+		pthread_mutex_lock(&account_list[max_idx].balance_write_lock);
 
 		if (account_list[account_src_idx].balance< amount)
 		{
 			pthread_mutex_lock(&log_mutex_write);
-			outfile << "Error " << ATM_ID << ": Your transaction failed – account id " << account_list[account_src_idx].account_num << " balance is lower than " << amount<< << endl;
+			outfile << "Error " << ATM_ID << ": Your transaction failed - account id " << account_list[account_src_idx].account_num << " balance is lower than " << amount<< endl;
 			pthread_mutex_unlock(&log_mutex_write);
 			return_status = -1;
 		}
@@ -465,8 +465,8 @@ int Transfer(int account_num_src, string password,int account_num_dst,int amount
 			return_status = 0;
 		
 		}
-		pthread_mutex_unlock(&account_list[min_idx].balance_write_lock, NULL);
-		pthread_mutex_unlock(&account_list[max_idx].balance_write_lock, NULL);
+		pthread_mutex_unlock(&account_list[min_idx].balance_write_lock);
+		pthread_mutex_unlock(&account_list[max_idx].balance_write_lock);
 
 	}
 	// reduce  numberof readers of accounts list
@@ -494,10 +494,15 @@ int SearchAccount(int account_num) {	//  verify if there alredy is an account wi
 	int found_accound = -1;
 	int i =0;
 	std::vector<Account>::iterator it;
-	for (it = account_list.begin(); it != account_list.end(); it++,i++)
-		if (it->account_num== id) {
-			found_accound = i;
-			break;
-		}
+	if(account_list.size() !=0)
+	{
+		for (it = account_list.begin(); it != account_list.end(); it++,i++)
+			if ((it->account_num) == account_num)
+			{
+				found_accound = i;
+				break;
+			}
+	}
+
 	return found_accound;
 }

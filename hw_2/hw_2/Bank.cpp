@@ -6,7 +6,7 @@
 static int bank_balance = 0;
 pthread_mutex_t bank_balance_mutex_read;
 pthread_mutex_t bank_balance_mutex_write;
-int bank_read_count = 0;
+static int bank_read_count = 0;
 int ATM_end;
 
 //declare bank treads functions
@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 	}
 
 	//initialize acc list locks
-	if (pthread_mutex_init(&lacc_list_mutex_read, NULL) != 0)
+	if (pthread_mutex_init(&acc_list_mutex_read, NULL) != 0)
 	{
 		cerr << "error: mutex initialization error" << endl;
 		exit(-1);
@@ -54,7 +54,17 @@ int main(int argc, char* argv[])
 		exit(-1);
 	}
 	
-	//TODO other mutexes
+	//initialize bank balance
+		if (pthread_mutex_init(&bank_balance_mutex_read, NULL) != 0)
+		{
+			cerr << "error: mutex initialization error" << endl;
+			exit(-1);
+		}
+		if (pthread_mutex_init(&bank_balance_mutex_write, NULL) != 0)
+		{
+			cerr << "error: mutex initialization error" << endl;
+			exit(-1);
+		}
 
 	pthread_t* ATMs_threads = new pthread_t[ATM_num];
 
@@ -87,7 +97,7 @@ int main(int argc, char* argv[])
 	}
 
 	//comission thread - take commition from each account
-	pthread_t Comission_threads;
+	pthread_t Comission_thread;
 	int rc;
 	if ((rc = pthread_create(&Comission_thread, NULL, comission_func, NULL)))
 	{
@@ -99,7 +109,7 @@ int main(int argc, char* argv[])
 
 	//prinf status thread - prints banks status
 	pthread_t Print_thread;
-	int rc;
+
 	if ((rc = pthread_create(&Print_thread, NULL, print_status_func, NULL)))
 	{
 		delete[] ATM_threads_data;
@@ -112,7 +122,7 @@ int main(int argc, char* argv[])
 	for (int j = 0; j < ATM_num; j++)
 	{
 		void** retval;
-		pthread_join(&ATMs_threads[j], retval);
+		pthread_join(ATMs_threads[j], retval);
 		if (retval != NULL)//some thread return becasue of a failure,so end the program
 		{
 			cerr << "error : fail in a thread " << endl;
@@ -124,16 +134,16 @@ int main(int argc, char* argv[])
 
 
 	void** retval2;
-	pthread_join(&Comission_thread, retval2);
-	if (retval != NULL)//some thread return becasue of a failure,so end the program
+	pthread_join(Comission_thread, retval2);
+	if (retval2 != NULL)//some thread return becasue of a failure,so end the program
 	{
 		cerr << "error : fail in a thread " << endl;
 		exit(-1);
 	}
 	
 	void** retval3;
-	pthread_join(&Print_thread, retval3);
-	if (retval != NULL)//some thread return becasue of a failure,so end the program
+	pthread_join(Print_thread, retval3);
+	if (retval3 != NULL)//some thread return becasue of a failure,so end the program
 	{
 		cerr << "error : fail in a thread " << endl;
 		exit(-1);
@@ -161,7 +171,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	// destroing the vectors + bank money + log file mutexes
+	// destroing the vectors + bank balance + log file mutexes
 	if (pthread_mutex_destroy(&acc_list_mutex_read) != 0) {
 		cerr << strerror(errno) << endl;
 		exit(EXIT_FAILURE);
@@ -233,7 +243,7 @@ void* comission_func(void* arg)
 			for (it = account_list.begin(); it != account_list.end(); it++)
 			{
 				//lock accoutn because we want to wrtie on it
-				pthread_mutex_lock(&it->balance_write_lock, NULL);
+				pthread_mutex_lock(&(it->balance_write_lock));
 				double comission = commission_percentage * (double)it->balance;
 				int commission_rounded = int(comission);
 				
@@ -242,9 +252,9 @@ void* comission_func(void* arg)
 				pthread_mutex_lock(&log_mutex_write);
 				outfile << "Bank: commissions of " << commission_percentage*100 << " % were charged, the bank gained " << commission_rounded << " $ from account " << it->account_num << endl;
 				pthread_mutex_unlock(&log_mutex_write);
-				pthread_mutex_unlock(&it->balance_write_lock, NULL);
+				pthread_mutex_unlock(&it->balance_write_lock);
 
-				// readers-writers on the current bank money
+				// readers-writers on the current bank balance
 				pthread_mutex_lock(&bank_balance_mutex_write);
 				bank_balance = bank_balance + commission_rounded;
 				pthread_mutex_unlock(&bank_balance_mutex_write);
@@ -260,7 +270,7 @@ void* comission_func(void* arg)
 			pthread_mutex_unlock(&acc_list_mutex_write);
 		}
 		pthread_mutex_unlock(&acc_list_mutex_read);
-		return return_status;
+
 	}
 	
 
@@ -303,24 +313,24 @@ void* print_status_func(void* arg)
 			for (it = account_list.begin(); it != account_list.end(); it++)
 			{
 				//make readers/writers structure for account
-				pthread_mutex_lock(&it->balance_read_lock, NULL);
+				pthread_mutex_lock(&it->balance_read_lock);
 				it->readers_cnt++;
 				if (it->readers_cnt == 1)//first reader of account
 				{
-					pthread_mutex_lock(&it->balance_write_lock, NULL);
+					pthread_mutex_lock(&it->balance_write_lock);
 				}
-				pthread_mutex_unlock(&it->balance_read_lock, NULL);
+				pthread_mutex_unlock(&it->balance_read_lock);
 
-				cout << "Account " << it->account_num << ": Balance – " << it->balance << " $, Account Password – " << it->password << endl;
+				cout << "Account " << it->account_num << ": Balance - " << it->balance << " $, Account Password - " << it->password << endl;
 
 				//reduce reader os account
-				pthread_mutex_unlock(&it->balance_read_lock, NULL);
+				pthread_mutex_unlock(&it->balance_read_lock);
 				it->readers_cnt--;
 				if (it->readers_cnt == 0)//last reader of account
 				{
-					pthread_mutex_unlock(&it->balance_write_lock, NULL);
+					pthread_mutex_unlock(&it->balance_write_lock);
 				}
-				pthread_mutex_unlock(&it->balance_read_lock, NULL);
+				pthread_mutex_unlock(&it->balance_read_lock);
 
 			}
 
@@ -344,13 +354,13 @@ void* print_status_func(void* arg)
 		}
 		pthread_mutex_unlock(&bank_balance_mutex_read);
 		printf("The Bank has %d $\n", bank_balance);
-		pthread_mutex_lock(&bank_money_mutex_read);
+		pthread_mutex_lock(&bank_balance_mutex_read);
 		bank_read_count--;
 		if (bank_read_count == 0)
 		{
-			pthread_mutex_unlock(&bank_money_mutex_write);
+			pthread_mutex_unlock(&bank_balance_mutex_write);
 		}
-		pthread_mutex_unlock(&bank_money_mutex_read);
+		pthread_mutex_unlock(&bank_balance_mutex_read);
 	}
 	pthread_exit(NULL);
 }

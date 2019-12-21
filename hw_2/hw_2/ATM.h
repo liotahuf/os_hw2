@@ -20,7 +20,7 @@ using std::endl;
 using std::cerr;
 using std::ifstream;
 using std::stringstream;
-using std::deque;
+
 ofstream outfile;
 
 #define PASSWORD_LENGTH 4
@@ -35,7 +35,7 @@ int num_of_threads;
 
 typedef struct Account_ {
 
-	string account_num;
+	int account_num;
 	string password;
 	int balance;
 	//lock to deal wih paralelism
