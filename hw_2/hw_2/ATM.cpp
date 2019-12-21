@@ -18,71 +18,106 @@ int log_read_count = 0;
 //**************************************************************************************
 void* ATMain(void* ptrATM_data)
 {
-	char line[MAX_LINE_SIZE];
+
 	pATM_data curr_ATM = (pATM_data)ptrATM_data;
 
-
-	char* args[MAX_ARG];
 	int i = 0, num_arg = 0;
-	char* delimiters = " \t\n";
-	FILE* file = fopen(curr_ATM->file, "r");
-	while (1) //read line from file
+	ifstream file(curr_ATM->file); //input file stream
+	string line;
+	if (!file || !file.good()) {
+		// File doesn't exist or some other error
+		cerr << "File not found" << endl;
+		return 0;
+	}
+	while (getline(file, line))
 	{
 
 		usleep(100000);
-		if (fgets(line, MAX_LINE_SIZE, file) == NULL)//EOF
+		stringstream ss(line);
+		char cmd; // read (R) or write (W)
+		string account_num_s;
+		string password;
+		if (!(ss >> cmd >> account_num_s >> password))
 		{
-			break;
+			// Operation appears in an Invalid format
+			cerr << "Command Format error" << endl;
+			return 0;
 		}
-		//parse line
-		for (; i < MAX_ARG; i++)
-		{
-			args[i] = strtok(NULL, delimiters);
-			if (args[i] != NULL)
-				num_arg++;
-
-		}
-		char* cmd = args[0];
-		//verify what cmd to do
-		if (!strcmp(cmd, "O"))
+		if (!strcmp(&cmd, "O"))
 		{
 			//open account
-			int account_num = atoi(args[1]);
-			string password = args[2];
-			int initial_amount = atoi(args[3]);
+
+			string initial_amount_s;
+			if (!(ss >> initial_amount_s)) {
+				// Operation appears in an Invalid format
+				cerr << "Command Format error" << endl;
+				return 0;
+			}
+			int account_num = atoi(account_num_s.c_str());
+			int initial_amount = atoi(initial_amount_s.c_str());
 			OpenAccount(account_num, password, initial_amount, curr_ATM->ATM_ID);
 			continue;
 		}
-		else if (!strcmp(cmd, "D"))
+		else if (!strcmp(&cmd, "D"))
 		{
-			int account_num = atoi(args[1]);
-			string password = args[2];
-			int amount = atoi(args[3]);
+			string amount_s;
+			if (!(ss >> amount_s))
+			{
+				// Operation appears in an Invalid format
+				cerr << "Command Format error" << endl;
+				return 0;
+			}
+			int account_num = atoi(account_num_s.c_str());
+
+			int amount = atoi(amount_s.c_str());
 			Deposit(account_num, password, amount, curr_ATM->ATM_ID);
 			continue;
 		}
-		else if (!strcmp(cmd, "W"))
+		else if (!strcmp(&cmd, "W"))
 		{
-			int account_num = atoi(args[1]);
-			string password = args[2];
-			int amount = atoi(args[3]);
+			string amount_s;
+			if (!(ss >> amount_s))
+			{
+				// Operation appears in an Invalid format
+				cerr << "Command Format error" << endl;
+				return 0;
+			}
+			int account_num = atoi(account_num_s.c_str());
+
+			int amount = atoi(amount_s.c_str());
 			Withdraw(account_num, password, amount, curr_ATM->ATM_ID);
 			continue;
 		}
-		else if (!strcmp(cmd, "B"))
+		else if (!strcmp(&cmd, "B"))
 		{
-			int account_num = atoi(args[1]);
-			string password = args[2];
+			int account_num = atoi(account_num_s.c_str());
+
 			BalanceCheck(account_num, password,  curr_ATM->ATM_ID);
 			continue;
 		}
-		else if (!strcmp(cmd, "T"))
+		else if (!strcmp(&cmd, "T"))
 
 		{
-			int account_num_src = atoi(args[1]);
-			string password = args[2];
-			int account_num_dst = atoi(args[3]);
-			int amount = atoi(args[4]);
+			int account_num_src = atoi(account_num_s.c_str());
+
+
+			string account_num_dst_s;
+			if (!(ss >> account_num_dst_s))
+			{
+				// Operation appears in an Invalid format
+				cerr << "Command Format error" << endl;
+				return 0;
+			}
+			int account_num_dst = atoi(account_num_dst_s.c_str());
+
+			string amount_s;
+			if (!(ss >> amount_s))
+			{
+				// Operation appears in an Invalid format
+				cerr << "Command Format error" << endl;
+				return 0;
+			}
+			int amount = atoi(amount_s.c_str());
 			Transfer(account_num_src, password, account_num_dst, amount, curr_ATM->ATM_ID);
 			continue;
 

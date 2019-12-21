@@ -1,0 +1,8 @@
+0: New account id is 12347 with password 0144 and initial balance 50
+0: Account 12347 new balance is 1250 after 1200 $ was deposited
+Bank: commissions of 3.37174 % were charged, the bank gained 42 $ from account 12347
+Error 0: Your transaction failed - password for account12347 is incorrect
+Bank: commissions of 2.09662 % were charged, the bank gained 25 $ from account 12347
+0: Account 12347 new balance is 683 after 500 $ was withdrew
+Bank: commissions of 2.98987 % were charged, the bank gained 20 $ from account 12347
+Bank: commissions of 2.32438 % were charged, the bank gained 15 $ from account 12347

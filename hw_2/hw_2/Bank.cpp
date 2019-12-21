@@ -324,7 +324,7 @@ void* print_status_func(void* arg)
 				cout << "Account " << it->account_num << ": Balance - " << it->balance << " $, Account Password - " << it->password << endl;
 
 				//reduce reader os account
-				pthread_mutex_unlock(&it->balance_read_lock);
+				pthread_mutex_lock(&it->balance_read_lock);
 				it->readers_cnt--;
 				if (it->readers_cnt == 0)//last reader of account
 				{
