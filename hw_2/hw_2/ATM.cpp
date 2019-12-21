@@ -20,6 +20,7 @@ void* ATMain(void* ptrATM_data)
 	while (1) //read line from file
 	{
 
+		usleep(100000);
 		if (fgets(line, MAX_LINE_SIZE, file) == NULL)//EOF
 		{
 			break;
@@ -85,6 +86,7 @@ void* ATMain(void* ptrATM_data)
 		}
 	}
 	//kill thread
+	pthread_exit(NULL);
 
 }
 
